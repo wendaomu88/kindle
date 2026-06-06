@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日历</title>
+    <title>日历时钟</title>
     <style>
         body {
             font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
@@ -12,33 +12,31 @@
             color: black;
             font-size: 18px;
             line-height: 1.6;
+            text-align: center; /* 全局居中，月历内部会单独调整 */
         }
-        h1 {
-            font-size: 22px;
-            font-weight: bold;
-            margin: 0 0 8px 0;
-        }
-        .date-big {
-            font-size: 36px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        .time-big {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 5px 0;
-            border: 2px solid black;
-            display: inline-block;
-            padding: 5px 15px;
-        }
-        .week-big {
+        .date-row {
             font-size: 24px;
             font-weight: bold;
-            margin: 5px 0 15px 0;
+            margin: 20px 0 10px 0;
+        }
+        .clock {
+            font-size: 72px;          /* 大字号 */
+            font-weight: bold;
+            margin: 20px auto;
+            padding: 10px 20px;
+            border: 2px solid black;
+            display: inline-block;
+            font-family: 'Courier New', Courier, monospace; /* 等宽字体模拟像素风 */
+            letter-spacing: 6px;
         }
         .lunar {
             font-size: 18px;
-            margin: 5px 0 20px 0;
+            margin: 10px 0 20px 0;
+        }
+        /* 月历部分需要左对齐才能正常显示表格 */
+        .calendar-section {
+            text-align: left;
+            margin: 30px 0 20px 0;
         }
         table {
             width: 100%;
@@ -67,18 +65,22 @@
 </head>
 <body>
 
-    <h1>今日日期</h1>
-    <div class="date-big" id="dateStr"></div>
-    <div class="time-big" id="timeStr"></div>
-    <div class="week-big" id="weekStr"></div>
+    <!-- 日期与星期合并为一行 -->
+    <div class="date-row" id="dateRow"></div>
+
+    <!-- 时钟居中，像素风格 -->
+    <div class="clock" id="clock"></div>
+
+    <!-- 农历 -->
     <div class="lunar" id="lunarStr"></div>
 
-    <h1>本月月历</h1>
-    <div id="calendarArea"></div>
-    <div class="update-tip">手动刷新页面即可更新时间</div>
+    <!-- 月历部分 -->
+    <div class="calendar-section" id="calendarArea"></div>
+
+    <div class="update-tip">每分钟自动刷新 · 亦可手动刷新</div>
 
     <script>
-        // ==================== 极简农历算法（已验证通过） ====================
+        // ==================== 极简农历算法 ====================
         var lunarInfo = [0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b6a0,0x195a6,0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x05ac0,0x0ab60,0x096d5,0x092e0];
         var Gan="甲乙丙丁戊己庚辛壬癸";
         var Zhi="子丑寅卯辰巳午未申酉戌亥";
@@ -128,22 +130,27 @@
             return Gan.charAt((y-4)%10)+Zhi.charAt((y-4)%12)+"年 ("+Animals.charAt((y-4)%12)+") "+l.monthStr+"月"+l.dayStr;
         }
 
-        // ==================== 极简更新时间 ====================
+        // ==================== 北京时间修正 ====================
+        function getBeijingTime(){
+            var now = new Date();
+            var utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            return new Date(utc + (3600000 * 8));
+        }
+
+        // ==================== 主更新函数 ====================
         function updateAll(){
-            var now=new Date();
+            var now = getBeijingTime();
             var weekDays=['日','一','二','三','四','五','六'];
 
-            // 年月日
-            document.getElementById('dateStr').innerHTML = now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日';
+            // 合并日期和星期：2026年6月6日 星期六
+            document.getElementById('dateRow').innerHTML = 
+                now.getFullYear() + '年' + (now.getMonth()+1) + '月' + now.getDate() + '日 星期' + weekDays[now.getDay()];
 
-            // 时:分（最原始的方式，绝对安全）
+            // 大时钟（时:分）
             var h = now.getHours();
             var m = now.getMinutes();
             var timeString = (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
-            document.getElementById('timeStr').innerHTML = timeString;
-
-            // 星期
-            document.getElementById('weekStr').innerHTML = '星期'+weekDays[now.getDay()];
+            document.getElementById('clock').innerHTML = timeString;
 
             // 农历
             document.getElementById('lunarStr').innerHTML = getLunarDate(now);
@@ -155,15 +162,14 @@
         function renderCalendar(year, month){
             var firstDay = new Date(year, month-1, 1).getDay();
             var daysInMonth = new Date(year, month, 0).getDate();
-            var today = new Date().getDate();
-            var isThisMonth = (year === new Date().getFullYear() && month === (new Date().getMonth()+1));
+            var todayDate = getBeijingTime();
+            var today = todayDate.getDate();
+            var isThisMonth = (year === todayDate.getFullYear() && month === (todayDate.getMonth()+1));
 
             var html = '<table><tr><th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th></tr><tr>';
-
             for(var i = 0; i < firstDay; i++) {
                 html += '<td></td>';
             }
-
             for(var day = 1; day <= daysInMonth; day++) {
                 if((day + firstDay - 1) % 7 === 0 && day !== 1) {
                     html += '</tr><tr>';
@@ -176,9 +182,13 @@
             }
             html += '</tr></table>';
             document.getElementById('calendarArea').innerHTML = html;
+
+            // 递归调用，每分钟刷新一次
+            clearTimeout(window.updateTimer);
+            window.updateTimer = setTimeout(updateAll, 60000);
         }
 
-        // 执行更新
+        // 立即执行首次更新
         updateAll();
     </script>
 </body>
