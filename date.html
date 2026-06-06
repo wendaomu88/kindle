@@ -23,6 +23,15 @@
             font-weight: bold;
             margin: 10px 0;
         }
+        .time-big {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 5px 0;
+            /* 给时间一个框，更醒目 */
+            border: 2px solid black;
+            display: inline-block;
+            padding: 5px 15px;
+        }
         .week-big {
             font-size: 24px;
             font-weight: bold;
@@ -50,17 +59,24 @@
             font-weight: bold;
             border: 3px solid black;
         }
+        .update-tip {
+            font-size: 14px;
+            color: #555;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
 
     <h1>今日日期</h1>
     <div class="date-big" id="dateStr"></div>
+    <div class="time-big" id="timeStr"></div>
     <div class="week-big" id="weekStr"></div>
     <div class="lunar" id="lunarStr"></div>
 
     <h1>本月月历</h1>
     <div id="calendarArea"></div>
+    <div class="update-tip">页面每30秒自动更新 · 若无变化请手动刷新</div>
 
     <script>
         // ==================== 极简农历算法 ====================
@@ -92,6 +108,10 @@
             var now=new Date();
             var weekDays=['日','一','二','三','四','五','六'];
             document.getElementById('dateStr').textContent=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日';
+            // 添加时间显示，格式 HH:MM
+            var h=now.getHours().toString().padStart(2,'0');
+            var m=now.getMinutes().toString().padStart(2,'0');
+            document.getElementById('timeStr').textContent=h+':'+m;
             document.getElementById('weekStr').textContent='星期'+weekDays[now.getDay()];
             document.getElementById('lunarStr').textContent=getLunarDate(now);
             renderCalendar(now.getFullYear(),now.getMonth()+1);
@@ -112,7 +132,10 @@
             document.getElementById('calendarArea').innerHTML=html;
         }
 
+        // 立即执行一次
         updateAll();
+        // 每30秒尝试刷新时间（Kindle可能不支持，无妨）
+        setInterval(updateAll, 30000);
     </script>
 </body>
 </html>
