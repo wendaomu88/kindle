@@ -14,20 +14,11 @@
             line-height: 1.6;
         }
 
-        /* 主标题 */
-        .main-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 0 0 25px 0;
-            padding-bottom: 10px;
-            border-bottom: 4px solid black;
-        }
-
-        /* 区域标题：本周待办、本月待办等 */
+        /* 区域标题 */
         .section-title {
             font-size: 20px;
             font-weight: bold;
-            margin: 30px 0 10px 0;
+            margin: 25px 0 10px 0;
             padding-bottom: 8px;
             border-bottom: 2px solid black;
         }
@@ -38,13 +29,16 @@
             padding-left: 25px;
             font-size: 18px;
             list-style-type: square;
+            /* 允许内容自然换行 */
+            word-wrap: break-word;
+            word-break: break-all;
         }
 
         .todo-list li {
             margin-bottom: 12px;
         }
 
-        /* 两个区域之间的大分隔线 */
+        /* 两个大类之间的分隔线 */
         .big-divider {
             border: none;
             border-top: 3px solid black;
@@ -63,18 +57,11 @@
 </head>
 <body>
 
-    <div class="main-title">工作看板</div>
-
-    <!-- 本周待办 -->
-    <div class="section-title">本周待办</div>
+    <!-- 待办工作（合并本周+本月） -->
+    <div class="section-title">待办工作</div>
     <ul class="todo-list">
         <li>完成项目报告</li>
         <li>团队周会</li>
-    </ul>
-
-    <!-- 本月待办 -->
-    <div class="section-title">本月待办</div>
-    <ul class="todo-list">
         <li>月度预算审核</li>
         <li>客户方案提交</li>
     </ul>
