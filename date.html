@@ -2,77 +2,128 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>日历时钟</title>
     <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
         body {
             font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
-            margin: 8px;
             background: white;
             color: black;
             font-size: 16px;
             line-height: 1.3;
-            text-align: center;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-direction: column;
+            flex-direction: column;
+            padding: 10px 10px 6px 10px;
+            box-sizing: border-box;
         }
+
+        /* 日期行 */
         .date-row {
             font-size: 22px;
             font-weight: bold;
-            margin: 8px 0 4px 0;
+            margin: 0 0 4px 0;
+            text-align: center;
+            -webkit-flex-shrink: 0;
+            flex-shrink: 0;
         }
+
+        /* 像素时钟 */
         .clock {
             font-size: 64px;
             font-weight: bold;
-            margin: 10px auto;
-            padding: 6px 16px;
+            margin: 8px auto;
+            padding: 4px 14px;
             border: 2px solid black;
             display: inline-block;
             font-family: 'Courier New', Courier, monospace;
             letter-spacing: 4px;
+            -webkit-flex-shrink: 0;
+            flex-shrink: 0;
+            line-height: 1;
         }
+
+        /* 农历 */
         .lunar {
             font-size: 16px;
-            margin: 4px 0 10px 0;
+            margin: 4px 0 8px 0;
+            text-align: center;
+            -webkit-flex-shrink: 0;
+            flex-shrink: 0;
         }
+
+        /* 月历区域：占据所有剩余空间 */
         .calendar-section {
-            text-align: left;
-            margin: 10px 0 10px 0;
+            -webkit-flex: 1;
+            flex: 1;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-direction: column;
+            flex-direction: column;
+            min-height: 0;
         }
-        table {
+
+        #calendarArea {
+            -webkit-flex: 1;
+            flex: 1;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-direction: column;
+            flex-direction: column;
+        }
+
+        #calendarArea table {
             width: 100%;
+            height: 100%;
             border-collapse: collapse;
             font-size: 14px;
+            -webkit-flex: 1;
+            flex: 1;
         }
+
         th, td {
             border: 1px solid black;
-            padding: 4px 2px;
             text-align: center;
-            vertical-align: top;
-            height: 42px;            /* 固定格子高度 */
-            min-height: 42px;
+            vertical-align: middle;
+            padding: 0;
         }
+
         th {
             background: #eee;
             font-weight: bold;
-            height: 28px;
+            height: 24px;
         }
+
         .today {
             font-weight: bold;
             border: 3px solid black;
         }
+
         .event {
             display: block;
             font-size: 9px;
             line-height: 1.2;
             color: black;
             font-weight: bold;
-            min-height: 18px;        /* 预留两个字的高度 */
+            margin-top: 2px;
         }
+
         .footer-tip {
             font-size: 13px;
             color: black;
             font-weight: bold;
+            text-align: center;
             margin-top: 6px;
-            padding-top: 6px;
+            -webkit-flex-shrink: 0;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -82,7 +133,10 @@
     <div class="clock" id="clock"></div>
     <div class="lunar" id="lunarStr"></div>
 
-    <div class="calendar-section" id="calendarArea"></div>
+    <div class="calendar-section">
+        <div id="calendarArea"></div>
+    </div>
+
     <div class="footer-tip">日拱一卒 · 功不唐捐</div>
 
     <script>
@@ -198,7 +252,6 @@
                 var eventText = events[day] || '';
 
                 html += '<td' + cls + '>' + day;
-                // 无论是否有事件，都保留一个固定高度的文字占位区域
                 html += '<span class="event">' + eventText + '</span>';
                 html += '</td>';
             }
