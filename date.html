@@ -2,92 +2,73 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=800, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>日历时钟</title>
     <style>
-        /* 基础重置：占满全屏，无滚动条 */
         html, body {
             width: 100%;
-            height: 100%;
+            height: 580px;          /* 严格限定高度，杜绝溢出 */
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            overflow: hidden;       /* 任何超出部分直接裁剪 */
         }
         body {
-            /* 使用古老的 table 布局，兼容性极佳 */
-            display: table;
             font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
             background: white;
             color: black;
             font-size: 16px;
-            line-height: 1.3;
+            line-height: 1.2;
             text-align: center;
+            box-sizing: border-box;
         }
 
-        /* 每一行都是 table-row */
-        .row {
-            display: table-row;
+        /* 顶部区域总高度 ~135px */
+        .top-block {
+            height: 135px;
+            overflow: hidden;
+            display: block;
         }
-
-        /* 顶部区域：日期、星期、时钟、农历 */
-        .top-section {
-            display: table-row;
-            height: auto;
-        }
-        .top-cell {
-            display: table-cell;
-            vertical-align: middle;
-            padding: 8px 10px 0 10px;
-        }
-
         .date-row {
             font-size: 22px;
             font-weight: bold;
-            margin: 0 0 4px 0;
+            margin: 8px 0 2px 0;
         }
         .clock {
-            font-size: 68px;
+            font-size: 64px;
             font-weight: bold;
-            margin: 6px auto;
-            padding: 2px 12px;
+            margin: 2px auto;
+            padding: 0 12px;
             border: 2px solid black;
             display: inline-block;
             font-family: 'Courier New', Courier, monospace;
-            letter-spacing: 5px;
-            line-height: 1.1;
+            letter-spacing: 4px;
+            line-height: 1;
         }
         .lunar {
             font-size: 16px;
             margin: 4px 0 0 0;
         }
 
-        /* 月历行：占据所有剩余高度 */
-        .calendar-row {
-            display: table-row;
-            height: 100%;
+        /* 月历区域高度 ~415px，稍留余地 */
+        .calendar-block {
+            height: 415px;
+            overflow: hidden;
+            margin: 5px 8px 0 8px;
         }
-        .calendar-cell {
-            display: table-cell;
-            vertical-align: middle;
-            padding: 5px 8px 5px 8px;
-        }
-
-        /* 让表格完全填满单元格 */
         #calendarArea {
             height: 100%;
         }
-        #calendarArea table {
+        table {
             width: 100%;
             height: 100%;
             border-collapse: collapse;
             font-size: 14px;
         }
-
         th, td {
             border: 1px solid black;
             padding: 0 2px;
             text-align: center;
-            vertical-align: middle; /* 内容居中，看起来更整齐 */
+            vertical-align: middle;
         }
         th {
             background: #eee;
@@ -106,15 +87,12 @@
             font-weight: bold;
         }
 
-        /* 底部格言行 */
-        .footer-row {
-            display: table-row;
-            height: auto;
-        }
-        .footer-cell {
-            display: table-cell;
-            vertical-align: middle;
-            padding: 0 10px 8px 10px;
+        /* 底部格言高度 ~30px */
+        .footer-block {
+            height: 30px;
+            overflow: hidden;
+            line-height: 30px;
+            margin: 0;
         }
         .footer-tip {
             font-size: 13px;
@@ -125,27 +103,18 @@
 </head>
 <body>
 
-    <!-- 顶部时间区 -->
-    <div class="top-section">
-        <div class="top-cell">
-            <div class="date-row" id="dateRow"></div>
-            <div class="clock" id="clock"></div>
-            <div class="lunar" id="lunarStr"></div>
-        </div>
+    <div class="top-block">
+        <div class="date-row" id="dateRow"></div>
+        <div class="clock" id="clock"></div>
+        <div class="lunar" id="lunarStr"></div>
     </div>
 
-    <!-- 月历区（自动拉伸） -->
-    <div class="calendar-row">
-        <div class="calendar-cell">
-            <div id="calendarArea"></div>
-        </div>
+    <div class="calendar-block">
+        <div id="calendarArea"></div>
     </div>
 
-    <!-- 底部格言 -->
-    <div class="footer-row">
-        <div class="footer-cell">
-            <div class="footer-tip">日拱一卒 · 功不唐捐</div>
-        </div>
+    <div class="footer-block">
+        <div class="footer-tip">日拱一卒 · 功不唐捐</div>
     </div>
 
     <script>
