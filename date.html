@@ -61,15 +61,8 @@
             font-size: 10px;
             line-height: 1.2;
             margin-top: 2px;
-            color: #333;
-        }
-        .event-important {
-            display: block;
-            font-size: 10px;
-            line-height: 1.2;
-            margin-top: 2px;
-            font-weight: bold;
             color: black;
+            font-weight: bold;
         }
         .footer-tip {
             font-size: 14px;
@@ -145,17 +138,16 @@
             return new Date(utc + (3600000 * 8));
         }
 
-        // 事件定义：数字为日期，'text' 为显示文字，'important' 为是否加粗加黑
         function getEvents(year, month) {
             if (year === 2026 && month === 6) {
                 return {
-                    9: { text: "周会", important: false },
-                    10: { text: "分总会", important: false },
-                    16: { text: "周会", important: false },
-                    19: { text: "端午节", important: true },
-                    20: { text: "端午节", important: true },
-                    21: { text: "端午节", important: true },
-                    23: { text: "周会", important: false }
+                    9: "周会",
+                    10: "月会",
+                    16: "周会",
+                    19: "端午",
+                    20: "端午",
+                    21: "端午",
+                    23: "周会"
                 };
             }
             return {};
@@ -200,14 +192,13 @@
                 }
 
                 var cls = (isThisMonth && day === today) ? ' class="today"' : '';
-                var eventData = events[day];
-                var eventHtml = '';
-                if (eventData) {
-                    var eventClass = eventData.important ? 'event-important' : 'event';
-                    eventHtml = '<span class="' + eventClass + '">' + eventData.text + '</span>';
-                }
+                var eventText = events[day] || '';
 
-                html += '<td' + cls + '>' + day + eventHtml + '</td>';
+                html += '<td' + cls + '>' + day;
+                if (eventText) {
+                    html += '<span class="event">' + eventText + '</span>';
+                }
+                html += '</td>';
             }
             html += '</tr></table>';
             document.getElementById('calendarArea').innerHTML = html;
