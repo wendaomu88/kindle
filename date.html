@@ -2,94 +2,60 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=800, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>日历时钟</title>
     <style>
         body {
-            width: 800px;
-            height: 600px;
-            margin: 0;
-            padding: 10px;
+            font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
+            margin: 15px;
             background: white;
             color: black;
-            font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
-            font-size: 16px;
-            line-height: 1.4;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: row;
-            align-items: stretch;
+            font-size: 18px;
+            line-height: 1.6;
+            text-align: center;
         }
-
-        .left-panel {
-            width: 380px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding-right: 15px;
-            border-right: 2px solid black;
-        }
-
         .date-row {
             font-size: 24px;
             font-weight: bold;
-            margin: 8px 0;
+            margin: 20px 0 10px 0;
         }
-
         .clock {
-            font-size: 80px;
+            font-size: 72px;
             font-weight: bold;
-            margin: 10px 0;
-            padding: 8px 15px;
-            border: 3px solid black;
+            margin: 20px auto;
+            padding: 10px 20px;
+            border: 2px solid black;
+            display: inline-block;
             font-family: 'Courier New', Courier, monospace;
             letter-spacing: 6px;
         }
-
         .lunar {
             font-size: 18px;
-            margin: 8px 0;
+            margin: 10px 0 20px 0;
         }
-
-        .update-tip {
-            font-size: 12px;
-            color: #555;
-            margin-top: 10px;
+        .calendar-section {
+            text-align: left;
+            margin: 30px 0 20px 0;
         }
-
-        .right-panel {
-            flex: 1;
-            padding-left: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 15px;
+            font-size: 16px;
         }
-
         th, td {
             border: 1px solid black;
-            padding: 6px 2px;
+            padding: 8px 4px;
             text-align: center;
             vertical-align: top;
         }
-
         th {
             background: #eee;
             font-weight: bold;
         }
-
         .today {
             font-weight: bold;
             border: 3px solid black;
         }
-
-        /* 事件文字样式 */
         .event {
             display: block;
             font-size: 10px;
@@ -97,18 +63,23 @@
             margin-top: 2px;
             color: #333;
         }
+        .footer-tip {
+            font-size: 14px;
+            color: #555;
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 15px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="left-panel">
-        <div class="date-row" id="dateRow"></div>
-        <div class="clock" id="clock"></div>
-        <div class="lunar" id="lunarStr"></div>
-        <div class="update-tip">日拱一卒 功不唐捐</div>
-    </div>
+    <div class="date-row" id="dateRow"></div>
+    <div class="clock" id="clock"></div>
+    <div class="lunar" id="lunarStr"></div>
 
-    <div class="right-panel" id="calendarArea"></div>
+    <div class="calendar-section" id="calendarArea"></div>
+    <div class="footer-tip">日拱一卒 · 功不唐捐</div>
 
     <script>
         var lunarInfo = [0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b6a0,0x195a6,0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x05ac0,0x0ab60,0x096d5,0x092e0];
@@ -166,9 +137,7 @@
             return new Date(utc + (3600000 * 8));
         }
 
-        // 定义本月事件（可随时修改这里）
         function getEvents(year, month) {
-            // 6月事件
             if (year === 2026 && month === 6) {
                 return {
                     9: "周会",
@@ -177,7 +146,6 @@
                     23: "周会"
                 };
             }
-            // 其他月份可继续添加
             return {};
         }
 
